@@ -301,12 +301,17 @@ onMounted(() => {
   text-align: center;
   margin-bottom: 25px;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
 }
 
 .title-container h2 {
   color: var(--theme-primary);
   font-size: 28px;
   margin: 10px 0;
+  flex-grow: 0;  /* 防止标题占据过多空间 */
 }
 
 .description {
@@ -877,7 +882,7 @@ onMounted(() => {
 /* 修改查看成员按钮样式 */
 .view-members-btn {
   position: absolute;
-  right: 10px;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
@@ -886,12 +891,15 @@ onMounted(() => {
   font-size: 14px;
   color: var(--theme-primary);
   transition: all 0.3s ease;
-  padding-right: 0;
+  padding: 6px 12px;
+  border-radius: 15px;
+  background: rgba(var(--theme-primary-rgb), 0.1);
 }
 
 .view-members-btn:hover {
   color: var(--theme-secondary);
   transform: translateY(-50%) translateX(-2px);
+  background: rgba(var(--theme-primary-rgb), 0.15);
 }
 
 .view-members-btn .el-icon {
@@ -1075,13 +1083,17 @@ html.dark :deep(.el-form-item__label) {
 
   /* 修改查看成员按钮样式 */
   .view-members-btn {
-    right: 0;
+    right: 15px;
     font-size: 13px;
-    padding: 4px 8px;
+    padding: 4px 10px;
+  }
+
+  .title-container {
+    padding: 0 5px;
   }
 
   .title-container h2 {
-    margin-right: 85px;
+    margin-right: 80px;
     font-size: 24px;
   }
 }
@@ -1089,12 +1101,13 @@ html.dark :deep(.el-form-item__label) {
 /* 特小屏幕适配 */
 @media (max-width: 360px) {
   .view-members-btn {
-    right: 0;
+    right: 10px;
     font-size: 12px;
+    padding: 3px 8px;
   }
 
   .title-container h2 {
-    margin-right: 75px;
+    margin-right: 70px;
     font-size: 22px;
   }
 }
