@@ -40,16 +40,18 @@ export const themes = {
     borderColorDark: 'rgba(255, 209, 220, 0.2)'
   },
   ocean: {
-    name: '深海',
-    gradient: 'linear-gradient(-45deg, #001e3c, #003366, #004080, #0059b3)',
-    backgroundColor: '#001e3c',
-    backgroundColorDark: '#001428',
-    textColor: '#e6f7ff',
-    textColorDark: '#b3e0ff',
-    primaryColor: '#00a0e9',
-    secondaryColor: '#00ffff',
-    borderColor: 'rgba(0, 160, 233, 0.2)',
-    borderColorDark: 'rgba(0, 255, 255, 0.2)'
+    name: '海洋',
+    primary: '#1976D2',
+    secondary: '#03A9F4',
+    text: '#0D47A1',
+    textDark: '#E3F2FD',
+    bg: '#F0F8FF',
+    bgDark: '#0D47A1',
+    border: '#64B5F6',
+    borderDark: '#1976D2',
+    gradient: 'linear-gradient(120deg, #E3F2FD, #BBDEFB, #90CAF9)',
+    primaryRgb: '25, 118, 210',
+    secondaryRgb: '3, 169, 244'
   },
   forest: {
     name: '森林',
@@ -62,6 +64,20 @@ export const themes = {
     secondaryColor: '#8bc34a',
     borderColor: 'rgba(76, 175, 80, 0.2)',
     borderColorDark: 'rgba(139, 195, 74, 0.2)'
+  },
+  aurora: {
+    name: '极光',
+    primary: '#26C6DA',
+    secondary: '#00BFA5',
+    text: '#006064',
+    textDark: '#E0F7FA',
+    bg: '#E0F7FA',
+    bgDark: '#006064',
+    border: '#4DD0E1',
+    borderDark: '#00ACC1',
+    gradient: 'linear-gradient(120deg, #E0F7FA, #B2EBF2, #80DEEA, #4DD0E1, #26C6DA)',
+    primaryRgb: '38, 198, 218',
+    secondaryRgb: '0, 191, 165'
   }
 }
 
