@@ -7,6 +7,7 @@ import * as Icons from '@element-plus/icons-vue';
 import router from './router';
 import zhCN from './locales/zh-CN'
 import enUS from './locales/en-US'
+import './styles/global.css'
 
 // 创建 i18n 实例
 const i18n = createI18n({

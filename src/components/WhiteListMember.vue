@@ -626,6 +626,7 @@ onMounted(() => {
   );
   animation: warmGradient 20s ease infinite;
   padding: 20px;
+  font-family: 'CustomFont', sans-serif;
 }
 
 .member-container {

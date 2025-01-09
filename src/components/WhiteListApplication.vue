@@ -266,6 +266,7 @@ onMounted(() => {
   background-image: var(--theme-gradient);
   animation: warmGradient 20s ease infinite;
   padding: 20px;
+  font-family: 'CustomFont', sans-serif;
 }
 
 @keyframes warmGradient {
