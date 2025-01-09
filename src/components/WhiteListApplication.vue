@@ -380,6 +380,7 @@ onMounted(() => {
   height: 40px;
   transform: translateY(0);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'CustomFont', sans-serif;
 }
 
 :deep(.el-input__inner:hover) {
@@ -895,6 +896,7 @@ onMounted(() => {
   padding: 6px 12px;
   border-radius: 15px;
   background: rgba(var(--theme-primary-rgb), 0.1);
+  font-family: 'CustomFont', sans-serif;
 }
 
 .view-members-btn:hover {
