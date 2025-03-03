@@ -1,7 +1,7 @@
 <template>
-  <div class="sakura-container" v-if="shouldShowSakura">
-    <span v-for="n in count" 
-          :key="n" 
+  <div v-if="shouldShowSakura" class="sakura-container">
+    <span v-for="n in count"
+          :key="n"
           :style="getSakuraStyle(n)"
           class="sakura">
     </span>
@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import {computed} from 'vue'
 
 const props = defineProps({
   count: {

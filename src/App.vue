@@ -1,7 +1,7 @@
 <template>
   <el-config-provider>
     <div :class="{ 'dark': isDark }" class="app-container">
-      <ThemeSwitcher v-model="isDark" />
+      <ThemeSwitcher v-model="isDark"/>
       <div class="route-container">
         <router-view></router-view>
       </div>
@@ -10,10 +10,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, onBeforeMount } from 'vue'
-import { ElConfigProvider } from 'element-plus'
+import {onBeforeMount, onMounted, ref, watch} from 'vue'
+import {ElConfigProvider} from 'element-plus'
 import ThemeSwitcher from './components/common/ThemeSwitcher.vue'
-import { themes, getThemeVariables } from './config/themes'
+import {getThemeVariables} from './config/themes'
 
 const isDark = ref(localStorage.getItem('darkMode') === 'true')
 
@@ -29,7 +29,7 @@ const checkSystemTheme = () => {
 watch(isDark, (newValue) => {
   document.documentElement.classList.toggle('dark', newValue)
   localStorage.setItem('darkMode', newValue)
-}, { immediate: true })
+}, {immediate: true})
 
 const getRGBValues = (color) => {
   // 将颜色转换为RGB值
@@ -46,12 +46,12 @@ const initTheme = () => {
   const savedTheme = localStorage.getItem('theme') || 'default'
   const variables = getThemeVariables(savedTheme)
   const root = document.documentElement
-  
+
   // 设置主题变量
   Object.entries(variables).forEach(([key, value]) => {
     root.style.setProperty(key, value)
   })
-  
+
   // 设置RGB变量
   root.style.setProperty('--theme-primary-rgb', getRGBValues(variables['--theme-primary']))
   root.style.setProperty('--theme-secondary-rgb', getRGBValues(variables['--theme-secondary']))
@@ -64,7 +64,7 @@ onBeforeMount(() => {
 onMounted(() => {
   // 监听系统主题变化
   window.matchMedia('(prefers-color-scheme: dark)')
-    .addEventListener('change', checkSystemTheme)
+      .addEventListener('change', checkSystemTheme)
 })
 </script>
 

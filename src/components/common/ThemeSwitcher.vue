@@ -1,43 +1,47 @@
 <template>
-  <div class="theme-switcher" :class="{ 'dark': modelValue }">
+  <div :class="{ 'dark': modelValue }" class="theme-switcher">
     <el-popover
-      placement="bottom"
-      :width="300"
-      trigger="click"
-      popper-class="theme-popover"
+        placement="bottom"
+        :width="300"
+        trigger="click"
+        popper-class="theme-popover"
     >
       <template #reference>
         <el-button class="theme-button">
-          <el-icon><Brush /></el-icon>
+          <el-icon>
+            <Brush/>
+          </el-icon>
           主题
         </el-button>
       </template>
-      
+
       <div class="themes-container">
         <div class="themes-grid">
           <div
-            v-for="(theme, key) in themes"
-            :key="key"
-            class="theme-item"
-            :class="{ 'active': currentTheme === key }"
-            :style="{
+              v-for="(theme, key) in themes"
+              :key="key"
+              class="theme-item"
+              :class="{ 'active': currentTheme === key }"
+              :style="{
               background: theme.gradient
             }"
-            @click="changeTheme(key)"
+              @click="changeTheme(key)"
           >
             <div class="theme-name">{{ theme.name }}</div>
-            <el-icon v-if="currentTheme === key"><Check /></el-icon>
+            <el-icon v-if="currentTheme === key">
+              <Check/>
+            </el-icon>
           </div>
         </div>
-        
+
         <div class="dark-mode-toggle">
           <span>暗色模式</span>
           <el-switch
-            :model-value="modelValue"
-            @update:model-value="updateDarkMode"
-            inline-prompt
-            :active-icon="Moon"
-            :inactive-icon="Sunny"
+              :model-value="modelValue"
+              @update:model-value="updateDarkMode"
+              :active-icon="Moon"
+              :inactive-icon="Sunny"
+              inline-prompt
           />
         </div>
       </div>
@@ -46,10 +50,10 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { Brush, Check, Moon, Sunny } from '@element-plus/icons-vue'
-import { themes, getThemeVariables } from '@/config/themes'
-import { ElMessage } from 'element-plus'
+import {onMounted, ref, watch} from 'vue'
+import {Brush, Check, Moon, Sunny} from '@element-plus/icons-vue'
+import {getThemeVariables, themes} from '@/config/themes'
+import {ElMessage} from 'element-plus'
 
 const props = defineProps({
   modelValue: {
@@ -91,7 +95,7 @@ const updateDarkMode = (value) => {
 // 监听主题变化，确保在组件重新挂载时应用正确的主题
 watch(currentTheme, (newTheme) => {
   applyTheme(newTheme)
-}, { immediate: true })
+}, {immediate: true})
 
 // 初始化主题
 onMounted(() => {
@@ -120,7 +124,7 @@ onMounted(() => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   color: var(--theme-text) !important;
-    font-family: 'CustomFont', sans-serif;
+  font-family: 'CustomFont', sans-serif;
 }
 
 .theme-button:hover {

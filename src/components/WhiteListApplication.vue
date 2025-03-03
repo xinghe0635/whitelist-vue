@@ -1,16 +1,16 @@
 <template>
-  <div 
-    class="app-wrapper"
-    @click.self="handleFormBlur"
-    @touchstart.self="handleFormBlur"
+  <div
+      class="app-wrapper"
+      @click.self="handleFormBlur"
+      @touchstart.self="handleFormBlur"
   >
-    <SakuraBackground 
-      :isDark="isDark" 
-      :currentTheme="currentTheme"
+    <SakuraBackground
+        :isDark="isDark"
+        :currentTheme="currentTheme"
     />
-    <div 
-      class="server-status-container"
-      :class="{ 'form-focused': isFormFocused }"
+    <div
+        class="server-status-container"
+        :class="{ 'form-focused': isFormFocused }"
     >
       <div class="status-header">
         <div class="header-title">
@@ -29,45 +29,54 @@
         </div>
       </div>
       <div class="status-content">
-        <div v-for="server in serverStatus.servers"
-             :key="server.name"
-             class="server-block">
-          <div class="server-name">
-            <i class="el-icon-connection"></i>
-            {{ server.name }}
-          </div>
-          <div class="online-info">
-            <div v-if="server.players.length > 0" class="player-list">
-              <div class="players-label">
-                <i class="el-icon-user"></i>
-                在线玩家 ({{ server.playerCount }})：
-              </div>
-              <div class="players-container">
-                <el-tag
-                    v-for="player in server.players"
-                    :key="player"
-                    class="player-tag"
-                    effect="light"
-                    size="small"
-                >
-                  {{ player }}
-                </el-tag>
+        <div v-if="initialLoading" class="loading-state">
+          <el-icon class="loading-icon">
+            <Loading/>
+          </el-icon>
+          <span>加载中...</span>
+        </div>
+
+        <template v-else>
+          <div v-for="server in serverStatus.servers"
+               :key="server.name"
+               class="server-block animate-in">
+            <div class="server-name">
+              <i class="el-icon-connection"></i>
+              {{ server.name }}
+            </div>
+            <div class="online-info">
+              <div v-if="server.players.length > 0" class="player-list">
+                <div class="players-label">
+                  <i class="el-icon-user"></i>
+                  在线玩家 ({{ server.playerCount }})：
+                </div>
+                <div class="players-container">
+                  <el-tag
+                      v-for="player in server.players"
+                      :key="player"
+                      class="player-tag"
+                      effect="light"
+                      size="small"
+                  >
+                    {{ player }}
+                  </el-tag>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="query-time">
-          <i class="el-icon-time"></i>
-          {{ serverStatus.queryTime }}
-        </div>
+          <div class="query-time animate-in">
+            <i class="el-icon-time"></i>
+            {{ serverStatus.queryTime }}
+          </div>
+        </template>
       </div>
     </div>
 
-    <div 
-      class="form-container"
-      :class="{ 'focused': isFormFocused }"
-      @click="handleFormFocus"
-      @touchstart="handleFormFocus"
+    <div
+        class="form-container"
+        :class="{ 'focused': isFormFocused }"
+        @click="handleFormFocus"
+        @touchstart="handleFormFocus"
     >
       <div class="title-container">
         <i class="el-icon-user-solid"></i>
@@ -119,11 +128,11 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref, computed} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import {ElMessage} from 'element-plus';
 import axios from 'axios';
-import {Refresh, User} from '@element-plus/icons-vue'
-import { debounce } from 'lodash-es';
+import {Loading, Refresh, User} from '@element-plus/icons-vue'
+import {debounce} from 'lodash-es';
 import SakuraBackground from './common/SakuraBackground.vue'
 
 const http = axios.create({
@@ -153,21 +162,26 @@ const debouncedRefresh = debounce((refresh) => {
   getOnlinePlayer(refresh);
 }, 500);
 
+// 添加初始加载状态
+const initialLoading = ref(true);
+
 const submitForm = () => {
   if (!form.userName || !form.qqNum || !form.onlineFlag) {
     ElMessage.error('请填写完整信息');
   } else if (!/^\d{5,11}$/.test(form.qqNum)) {
     ElMessage.error('QQ号格式错误');
   } else {
-    fullscreenLoading.value = true;  // 使用新的loading状态
+    fullscreenLoading.value = true;
     // 先获取用户IP
     fetch('https://ip.useragentinfo.com/json')
         .then(response => response.json())
         .then(data => {
-          // 发送表单请求，带上IP信息
+          // 发送表单请求，带上IP信息和origin头
           return http.post('/mc/whitelist/apply', form, {
             headers: {
-              'X-Real-IP': data.ip
+              'X-Real-IP': data.ip,
+              // 添加origin头,获取当前页面的origin
+              'origin': window.location.origin
             }
           });
         })
@@ -177,19 +191,19 @@ const submitForm = () => {
           } else {
             ElMessage.error(res.data.msg || '未知错误，请联系管理员');
           }
-          fullscreenLoading.value = false;  // 关闭loading
+          fullscreenLoading.value = false;
         })
         .catch((error) => {
           console.error('提交表单请求出错：', error);
           ElMessage.error('提交表单时发生错误，请检查网络或联系管理员');
-          fullscreenLoading.value = false;  // 关闭loading
+          fullscreenLoading.value = false;
         });
   }
 };
 
 const getOnlinePlayer = (reflash) => {
   loading = true;
-  http.get('/server/serverlist/getOnlinePlayer').then((res) => {
+  http.get('/api/v1/getOnlinePlayer').then((res) => {
     if (res.data.code === 200) {
       const data = res.data.data;
       // 重置服务器列表
@@ -230,10 +244,12 @@ const getOnlinePlayer = (reflash) => {
       ElMessage.error(res.data.msg || '获取服务器状态失败');
     }
     loading = false;
+    initialLoading.value = false; // 设置初始加载状态为 false
   }).catch((error) => {
     console.error('查询在线玩家请求出错：', error);
     ElMessage.error('查询在线玩家时发生错误，请检查网络或联系管理员');
     loading = false;
+    initialLoading.value = false; // 错误时也需要关闭加载状态
   });
 };
 
@@ -312,7 +328,7 @@ onMounted(() => {
   color: var(--theme-primary);
   font-size: 28px;
   margin: 10px 0;
-  flex-grow: 0;  /* 防止标题占据过多空间 */
+  flex-grow: 0; /* 防止标题占据过多空间 */
 }
 
 .description {
@@ -346,6 +362,7 @@ onMounted(() => {
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  font-family: 'CustomFont', sans-serif;
 }
 
 .submit-btn::before {
@@ -457,7 +474,7 @@ onMounted(() => {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   z-index: 1001;
-  
+
   /* 默认在右上角 */
   top: 20px;
   right: 20px;
@@ -930,7 +947,7 @@ onMounted(() => {
 
 /* 暗色模式样式 */
 html.dark .app-wrapper {
-  background: #1e1e2e;  /* 使用纯色背景 */
+  background: #1e1e2e; /* 使用纯色背景 */
 }
 
 html.dark .form-container {
@@ -990,7 +1007,7 @@ html.dark :deep(.el-textarea__wrapper) {
   box-shadow: none !important;
 }
 
-html.dark :deep(.el-radio__label) { 
+html.dark :deep(.el-radio__label) {
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -1169,8 +1186,8 @@ html.dark :deep(.el-form-item__label) {
 [data-theme="forest"] .player-tag {
   background-color: rgba(255, 255, 255, 0.15);
   border-color: rgba(144, 238, 144, 0.3);
-  color: #2c5530;  /* 深绿色文字 */
-  font-weight: 500;  /* 加粗文字 */
+  color: #2c5530; /* 深绿色文字 */
+  font-weight: 500; /* 加粗文字 */
 }
 
 [data-theme="forest"] .player-tag:hover {
@@ -1183,7 +1200,7 @@ html.dark :deep(.el-form-item__label) {
 .dark[data-theme="forest"] .player-tag {
   background-color: rgba(144, 238, 144, 0.15);
   border-color: rgba(144, 238, 144, 0.3);
-  color: #90EE90;  /* 亮绿色文字 */
+  color: #90EE90; /* 亮绿色文字 */
 }
 
 .dark[data-theme="forest"] .player-tag:hover {
@@ -1197,7 +1214,7 @@ html.dark :deep(.el-form-item__label) {
   border-color: rgba(100, 181, 246, 0.3);
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(25, 118, 210, 0.15),
-              0 2px 8px rgba(25, 118, 210, 0.1);
+  0 2px 8px rgba(25, 118, 210, 0.1);
 }
 
 [data-theme="ocean"] .title-container h2 {
@@ -1214,7 +1231,7 @@ html.dark :deep(.el-form-item__label) {
   border-color: rgba(100, 181, 246, 0.3);
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(25, 118, 210, 0.15),
-              0 2px 8px rgba(25, 118, 210, 0.1);
+  0 2px 8px rgba(25, 118, 210, 0.1);
 }
 
 [data-theme="ocean"] .server-name {
@@ -1254,7 +1271,7 @@ html.dark :deep(.el-form-item__label) {
   border-color: rgba(100, 181, 246, 0.2);
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(13, 71, 161, 0.3),
-              0 2px 8px rgba(13, 71, 161, 0.2);
+  0 2px 8px rgba(13, 71, 161, 0.2);
 }
 
 .dark[data-theme="ocean"] .server-status-container {
@@ -1262,7 +1279,7 @@ html.dark :deep(.el-form-item__label) {
   border-color: rgba(100, 181, 246, 0.2);
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(13, 71, 161, 0.3),
-              0 2px 8px rgba(13, 71, 161, 0.2);
+  0 2px 8px rgba(13, 71, 161, 0.2);
 }
 
 .dark[data-theme="ocean"] .title-container h2 {
@@ -1308,7 +1325,7 @@ html.dark :deep(.el-form-item__label) {
   border-color: rgba(77, 208, 225, 0.3);
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(38, 198, 218, 0.15),
-              0 2px 8px rgba(38, 198, 218, 0.1);
+  0 2px 8px rgba(38, 198, 218, 0.1);
 }
 
 [data-theme="aurora"] .title-container h2 {
@@ -1325,7 +1342,7 @@ html.dark :deep(.el-form-item__label) {
   border-color: rgba(77, 208, 225, 0.3);
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(38, 198, 218, 0.15),
-              0 2px 8px rgba(38, 198, 218, 0.1);
+  0 2px 8px rgba(38, 198, 218, 0.1);
 }
 
 [data-theme="aurora"] .server-name {
@@ -1365,7 +1382,7 @@ html.dark :deep(.el-form-item__label) {
   border-color: rgba(77, 208, 225, 0.2);
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(0, 96, 100, 0.3),
-              0 2px 8px rgba(0, 96, 100, 0.2);
+  0 2px 8px rgba(0, 96, 100, 0.2);
 }
 
 .dark[data-theme="aurora"] .server-status-container {
@@ -1373,7 +1390,7 @@ html.dark :deep(.el-form-item__label) {
   border-color: rgba(77, 208, 225, 0.2);
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(0, 96, 100, 0.3),
-              0 2px 8px rgba(0, 96, 100, 0.2);
+  0 2px 8px rgba(0, 96, 100, 0.2);
 }
 
 .dark[data-theme="aurora"] .title-container h2 {
@@ -1412,4 +1429,77 @@ html.dark :deep(.el-form-item__label) {
 .dark[data-theme="aurora"] .view-members-btn:hover {
   color: #80DEEA;
 }
+
+/* 添加加载状态样式 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: var(--theme-text);
+  gap: 10px;
+}
+
+.loading-icon {
+  font-size: 24px;
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 添加内容淡入动画 */
+.animate-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 适配暗色模式 */
+.dark .loading-state {
+  color: var(--theme-text-dark);
+}
+
+/* 主题特定样式 */
+[data-theme="sakura"] .loading-state {
+  color: var(--theme-primary);
+}
+
+[data-theme="cyberpunk"] .loading-state {
+  color: #00ffd5;
+  text-shadow: var(--theme-text-shadow);
+}
+
+[data-theme="ocean"] .loading-state {
+  color: #1976D2;
+}
+
+.dark[data-theme="ocean"] .loading-state {
+  color: #64B5F6;
+}
+
+[data-theme="aurora"] .loading-state {
+  color: #00838F;
+}
+
+.dark[data-theme="aurora"] .loading-state {
+  color: #4DD0E1;
+}
+
 </style>

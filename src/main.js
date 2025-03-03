@@ -11,12 +11,12 @@ import './styles/global.css'
 
 // 创建 i18n 实例
 const i18n = createI18n({
-  legacy: false, // 使用 Composition API 模式
-  locale: localStorage.getItem('locale') || 'zh-CN', // 记住用户的语言选择
-  messages: {
-    'zh-CN': zhCN,
-    'en-US': enUS
-  }
+    legacy: false, // 使用 Composition API 模式
+    locale: localStorage.getItem('locale') || 'zh-CN', // 记住用户的语言选择
+    messages: {
+        'zh-CN': zhCN,
+        'en-US': enUS
+    }
 });
 
 const app = createApp(App);
