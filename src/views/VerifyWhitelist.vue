@@ -51,9 +51,7 @@ const verifyCode = async () => {
   try {
     // 获取用户IP的函数
     const getIpFromPrimarySource = () => {
-      return fetch('https://ip.useragentinfo.com/json', {
-        mode: 'no-cors'
-      })
+      return fetch('https://ip.useragentinfo.com/json')
           .then(response => response.json())
           .catch(error => {
             console.warn('主要IP获取接口失败，尝试备用接口:', error)
@@ -75,18 +73,20 @@ const verifyCode = async () => {
     const ipData = await getIpFromPrimarySource()
 
     // 准备请求头
-    const headers = {
-      'origin': window.location.origin
-    }
+    const headers = {}
 
     // 如果成功获取到IP，添加到请求头
     if (ipData && ipData.ip) {
       headers['X-Real-IP'] = ipData.ip
     }
 
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/mc/whitelist/verify`, {
+    // 确保API URL使用HTTPS
+    const apiUrl = import.meta.env.VITE_API_URL.replace('http://', 'https://')
+
+    const res = await axios.get(`${apiUrl}/mc/whitelist/verify`, {
       params: {code},
-      headers
+      headers,
+      withCredentials: true // 允许跨域请求携带凭证
     })
 
     if (res.data.code === 200) {
