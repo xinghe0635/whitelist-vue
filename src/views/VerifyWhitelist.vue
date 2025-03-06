@@ -49,8 +49,44 @@ const verifyCode = async () => {
   }
 
   try {
+    // 获取用户IP的函数
+    const getIpFromPrimarySource = () => {
+      return fetch('https://ip.useragentinfo.com/json', {
+        mode: 'no-cors'
+      })
+          .then(response => response.json())
+          .catch(error => {
+            console.warn('主要IP获取接口失败，尝试备用接口:', error)
+            return getIpFromBackupSource()
+          })
+    }
+
+    // 备用IP获取接口
+    const getIpFromBackupSource = () => {
+      return fetch('https://ipinfo.io/json')
+          .then(response => response.json())
+          .catch(error => {
+            console.warn('备用IP获取接口也失败:', error)
+            return {}
+          })
+    }
+
+    // 获取IP
+    const ipData = await getIpFromPrimarySource()
+
+    // 准备请求头
+    const headers = {
+      'origin': window.location.origin
+    }
+
+    // 如果成功获取到IP，添加到请求头
+    if (ipData && ipData.ip) {
+      headers['X-Real-IP'] = ipData.ip
+    }
+
     const res = await axios.get(`${import.meta.env.VITE_API_URL}/mc/whitelist/verify`, {
-      params: {code}
+      params: {code},
+      headers
     })
 
     if (res.data.code === 200) {
