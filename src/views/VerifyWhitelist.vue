@@ -81,7 +81,7 @@ const verifyCode = async () => {
     }
 
     // 确保API URL使用HTTPS
-    const apiUrl = import.meta.env.VITE_API_URL.replace('http://', 'https://')
+    const apiUrl = import.meta.env.VITE_API_URL
 
     const res = await axios.get(`${apiUrl}/mc/whitelist/verify`, {
       params: {code},
