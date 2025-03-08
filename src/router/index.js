@@ -14,6 +14,11 @@ const router = createRouter({
             component: () => import('../components/WhiteListMember.vue')
         },
         {
+            path: '/server-status',
+            name: 'serverStatus',
+            component: () => import('../components/ServerStatus.vue')
+        },
+        {
             path: '/player-servers/:gameId',
             name: 'playerServers',
             component: () => import('../components/PlayerServers.vue')

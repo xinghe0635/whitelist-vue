@@ -37,7 +37,7 @@
         </div>
 
         <template v-else>
-          <div v-for="server in serverStatus.servers"
+          <div v-for="(server, index) in displayedServers"
                :key="server.name"
                class="server-block animate-in">
             <div class="server-name">
@@ -64,6 +64,19 @@
               </div>
             </div>
           </div>
+
+          <div v-if="showViewMore" class="view-more-container">
+            <el-button
+                class="view-more-btn"
+                type="primary"
+                text
+                @click="$router.push('/server-status')"
+            >
+              <el-icon><ArrowRight /></el-icon>
+              查看更多服务器
+            </el-button>
+          </div>
+
           <div class="query-time animate-in">
             <i class="el-icon-time"></i>
             {{ serverStatus.queryTime }}
@@ -128,10 +141,10 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref} from 'vue';
+import {computed, onMounted, reactive, ref} from 'vue';
 import {ElMessage} from 'element-plus';
 import axios from 'axios';
-import {Loading, Refresh, User} from '@element-plus/icons-vue'
+import {Loading, Refresh, User, ArrowRight} from '@element-plus/icons-vue'
 import {debounce} from 'lodash-es';
 import SakuraBackground from './common/SakuraBackground.vue'
 
@@ -294,6 +307,21 @@ const handleFormBlur = () => {
   isFormFocused.value = false;
 };
 
+// 计算是否显示查看更多按钮
+const showViewMore = computed(() => {
+  return serverStatus.servers.length > 3;
+});
+
+// 计算要显示的服务器列表
+const displayedServers = computed(() => {
+  return serverStatus.servers.slice(0, 3);
+});
+
+// 检测是否为移动设备
+const isMobile = computed(() => {
+  return window.innerWidth <= 768;
+});
+
 onMounted(() => {
   getOnlinePlayer();
 });
@@ -309,7 +337,6 @@ onMounted(() => {
   background-size: 400% 400%;
   background-image: var(--theme-gradient);
   animation: warmGradient 20s ease infinite;
-  padding: 20px;
   font-family: 'CustomFont', sans-serif;
 }
 
@@ -1099,55 +1126,42 @@ html.dark :deep(.el-form-item__label) {
   opacity: 0.6;
 }
 
-/* 添加移动端样式 */
+/* 修改移动端样式 */
 @media (max-width: 768px) {
-  .server-status-container {
-    position: fixed;
-    bottom: 20px;
-    top: auto;
-    right: 50%;
-    transform: translateX(50%);
-    width: calc(100% - 40px);
-    max-width: 400px;
+  .app-wrapper {
+    flex-direction: column;
+    padding: 20px;
+    justify-content: flex-start;
   }
 
-  /* 当表单被点击时，服务器状态面板移到底部并降低透明度 */
-  .server-status-container.form-focused {
-    opacity: 0.6;
-    transform: translateX(50%) translateY(90%);
+  .server-status-container {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin-top: 20px;
+    transform: none;
+    order: 2;
   }
 
   .form-container {
-    position: relative;
-    z-index: 1000;
-    transition: all 0.3s ease;
+    margin-top: 0;
+    order: 1;
+    width: 100%;
   }
 
-  /* 表单被点击时的效果 */
-  .form-container.focused {
-    z-index: 1002;
-    transform: translateY(0) scale(1.01);
-  }
-
-  /* 修改查看成员按钮样式 */
-  .view-members-btn {
-    right: 15px;
-    font-size: 13px;
-    padding: 4px 10px;
-  }
-
-  .title-container {
-    padding: 0 5px;
-  }
-
-  .title-container h2 {
-    margin-right: 80px;
-    font-size: 24px;
+  /* 移除表单焦点时的服务器状态容器样式 */
+  .server-status-container.form-focused {
+    opacity: 1;
+    transform: none;
   }
 }
 
 /* 特小屏幕适配 */
 @media (max-width: 360px) {
+  .app-wrapper {
+    padding: 15px;
+  }
+
   .view-members-btn {
     right: 10px;
     font-size: 12px;
@@ -1157,6 +1171,14 @@ html.dark :deep(.el-form-item__label) {
   .title-container h2 {
     margin-right: 70px;
     font-size: 22px;
+  }
+
+  .form-container {
+    padding: 20px;
+  }
+
+  .server-status-container {
+    margin-top: 15px;
   }
 }
 
@@ -1528,6 +1550,28 @@ html.dark :deep(.el-form-item__label) {
 
 .dark[data-theme="aurora"] .loading-state {
   color: #4DD0E1;
+}
+
+/* 添加查看更多按钮样式 */
+.view-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--theme-border);
+}
+
+.view-more-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--theme-primary);
+  transition: all 0.3s ease;
+}
+
+.view-more-btn:hover {
+  transform: translateX(4px);
 }
 
 </style>
