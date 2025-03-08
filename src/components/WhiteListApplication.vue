@@ -1568,6 +1568,7 @@ html.dark :deep(.el-form-item__label) {
   font-size: 14px;
   color: var(--theme-primary);
   transition: all 0.3s ease;
+  font-family: 'CustomFont', sans-serif;
 }
 
 .view-more-btn:hover {

@@ -128,6 +128,7 @@ onMounted(() => {
   background-image: var(--theme-gradient);
   background-size: 400% 400%;
   animation: warmGradient 20s ease infinite;
+  font-family: 'CustomFont', sans-serif;
 }
 
 .header {
